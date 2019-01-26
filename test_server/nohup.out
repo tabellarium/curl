@@ -1,0 +1,5 @@
+[Sat Jan 26 22:57:50 2019] Failed to listen on localhost:9000 (reason: Address already in use)
+PHP 7.2.12-1+ubuntu18.04.1+deb.sury.org+1 Development Server started at Sat Jan 26 22:58:13 2019
+Listening on http://localhost:9898
+Document root is /opt/project/share/t/curl/curl/test_server
+Press Ctrl-C to quit.
