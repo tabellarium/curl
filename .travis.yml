@@ -1,0 +1,39 @@
+os: linux
+dist: xenial
+language: php
+php:
+  - '7.1'
+  - '7.2'
+  - '7.3'
+
+addons:
+  apt:
+    packages:
+      - nginx
+
+env:
+  CI_TEST_SERVER: 1
+
+before_install:
+  ## php-fpm
+  - sudo cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf.default ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
+  - echo "cgi.fix_pathinfo = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm
+  ## nginx
+  - sudo cp -f build/travis-ci-nginx /etc/nginx/sites-available/default
+  - sudo sed -e "s?%TRAVIS_BUILD_DIR%?$(pwd)?g" --in-place /etc/nginx/sites-available/default
+  - sudo service nginx restart
+  ## composer
+  - composer self-update
+  - composer validate
+
+install:
+  - composer install --prefer-dist
+
+script:
+  - vendor/bin/phpunit
+  - vendor/bin/php-cs-fixer fix --verbose --diff --dry-run
+
+cache:
+  directories:
+    - $HOME/.composer/cache
