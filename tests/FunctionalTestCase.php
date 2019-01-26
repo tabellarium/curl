@@ -39,7 +39,7 @@ abstract class FunctionalTestCase extends TestCase
 
     protected static function getServerPort(): int
     {
-        return static::useCiServer() ? 80 : \intval($_ENV['TEST_HTTP_SERVER_PORT']);
+        return static::useCiServer() ? 8080 : \intval($_ENV['TEST_HTTP_SERVER_PORT']);
     }
 
     protected static function getServerUri(string $path): string
