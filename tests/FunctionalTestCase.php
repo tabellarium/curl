@@ -14,11 +14,6 @@ abstract class FunctionalTestCase extends TestCase
      */
     private static $server;
 
-    public static function useCiServer()
-    {
-        return filter_var(getenv('CI_TEST_SERVER'), FILTER_VALIDATE_BOOLEAN);
-    }
-
     public static function setUpBeforeClass(): void
     {
         if (!static::useCiServer()) {
@@ -32,6 +27,11 @@ abstract class FunctionalTestCase extends TestCase
         static::stopServer();
     }
 
+    public static function useCiServer()
+    {
+        return \filter_var(\getenv('CI_TEST_SERVER'), FILTER_VALIDATE_BOOLEAN);
+    }
+
     protected static function getServerHost(): string
     {
         return $_ENV['TEST_HTTP_SERVER_HOST'];
@@ -39,7 +39,7 @@ abstract class FunctionalTestCase extends TestCase
 
     protected static function getServerPort(): int
     {
-        return static::useCiServer() ? 80 : intval($_ENV['TEST_HTTP_SERVER_PORT']);
+        return static::useCiServer() ? 80 : \intval($_ENV['TEST_HTTP_SERVER_PORT']);
     }
 
     protected static function getServerUri(string $path): string
