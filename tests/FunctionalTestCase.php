@@ -16,7 +16,7 @@ abstract class FunctionalTestCase extends TestCase
 
     public static function useCiServer()
     {
-        return array_key_exists('CI_TEST_SERVER', $_ENV) && filter_var($_ENV['CI_TEST_SERVER'], FILTER_VALIDATE_BOOLEAN) === true;
+        return filter_var(getenv('CI_TEST_SERVER'), FILTER_VALIDATE_BOOLEAN);
     }
 
     public static function setUpBeforeClass(): void
