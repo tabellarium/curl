@@ -22,10 +22,13 @@ before_install:
   ## nginx
   - sudo cp -f build/travis-ci-nginx /etc/nginx/sites-available/default
   - sudo sed -e "s?%TRAVIS_BUILD_DIR%?$(pwd)?g" --in-place /etc/nginx/sites-available/default
+  - sudo cp test_server/request.php /usr/share/nginx/html/request.php
   - sudo service nginx restart
+
   ## composer
   - composer self-update
   - composer validate
+
 
 install:
   - composer install --prefer-dist

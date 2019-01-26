@@ -2,7 +2,7 @@ server {
 
     listen 80 default_server;
     listen [::]:80 default_server;
-	root %TRAVIS_BUILD_DIR%;
+	root /usr/share/nginx/html;
 
 	location ~ [^/]\.php(/|$) {
 			include fastcgi_params;
