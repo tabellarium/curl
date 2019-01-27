@@ -35,7 +35,7 @@ install:
   - curl localhost:80
 
 script:
-  - vendor/bin/phpunit
+  - vendor/bin/phpunit --verbose
   - vendor/bin/php-cs-fixer fix --verbose --diff --dry-run
 
 cache:
