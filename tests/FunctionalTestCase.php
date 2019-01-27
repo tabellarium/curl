@@ -17,8 +17,13 @@ abstract class FunctionalTestCase extends TestCase
     public static function setUpBeforeClass(): void
     {
         if (!static::useCiServer()) {
-            static::stopServer();
-            self::fail('Failed staring test server.');
+            static::startServer();
+            $curl = \curl_init(static::getServerUri('/pwd.php'));
+            \curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            $res = \curl_exec($curl);
+            if ($res !== \realpath(__DIR__.'/../test_server')) {
+                self::fail('Failed staring test server.');
+            }
         }
     }
 

@@ -530,8 +530,6 @@ class CurlHandleTest extends FunctionalTestCase
 
         $curl = new CurlHandle($resource);
 
-        $pauseTime = 0.5; // 0.5s
-
         \curl_setopt_array(
             $resource,
             [
@@ -548,49 +546,23 @@ class CurlHandleTest extends FunctionalTestCase
             ]
         );
 
-        $maxEnd = \microtime(true) + $pauseTime;
-
         do {
             $mrc = \curl_multi_exec($mh, $active);
-        } while (CURLM_CALL_MULTI_PERFORM == $mrc && $maxEnd > \microtime(true));
+        } while (CURLM_CALL_MULTI_PERFORM == $mrc);
 
-        while ($active && CURLM_OK == $mrc && $maxEnd > \microtime(true)) {
+        while ($active && CURLM_OK == $mrc) {
             if (-1 != \curl_multi_select($mh)) {
                 do {
                     $mrc = \curl_multi_exec($mh, $active);
-                } while (CURLM_CALL_MULTI_PERFORM == $mrc && $maxEnd > \microtime(true));
+                } while (CURLM_CALL_MULTI_PERFORM == $mrc);
             }
         }
 
-        static::assertGreaterThanOrEqual(
-            $maxEnd,
-            \microtime(true),
+        static::assertSame(
+            '',
+            \curl_multi_getcontent($resource),
             \sprintf(
                 'Failed verifiying that %s ::pause() managed to pause cURL connection',
-                \get_class($curl)
-            )
-        );
-
-        $maxEnd = \microtime(true) + $pauseTime;
-        $curl->pause(CURLPAUSE_CONT);
-
-        do {
-            $mrc = \curl_multi_exec($mh, $active);
-        } while (CURLM_CALL_MULTI_PERFORM == $mrc && $maxEnd > \microtime(true));
-
-        while ($active && CURLM_OK == $mrc && $maxEnd > \microtime(true)) {
-            if (-1 != \curl_multi_select($mh)) {
-                do {
-                    $mrc = \curl_multi_exec($mh, $active);
-                } while (CURLM_CALL_MULTI_PERFORM == $mrc && $maxEnd > \microtime(true));
-            }
-        }
-
-        static::assertLessThanOrEqual(
-            $maxEnd,
-            \time(),
-            \sprintf(
-                'Failed verifiying that %s ::pause() managed to unpause cURL connection',
                 \get_class($curl)
             )
         );
@@ -605,6 +577,10 @@ class CurlHandleTest extends FunctionalTestCase
      */
     public function pauseThrowsCurlException(): void
     {
+        if (\version_compare(\curl_version()['version'], '7.60', '<')) {
+            static::markTestSkipped('Unpausing not working on cURL prior 7.60');
+        }
+
         $resource = \curl_init();
         $mh = \curl_multi_init();
         \curl_multi_add_handle($mh, $resource);
@@ -632,17 +608,17 @@ class CurlHandleTest extends FunctionalTestCase
             ]
         );
 
-        $maxEnd = \microtime(true) + $pauseTime;
+        $maxEnd = \time() + $pauseTime;
 
         do {
             $mrc = \curl_multi_exec($mh, $active);
-        } while (CURLM_CALL_MULTI_PERFORM == $mrc && $maxEnd > \microtime(true));
+        } while (CURLM_CALL_MULTI_PERFORM == $mrc && $maxEnd > \time());
 
-        while ($active && CURLM_OK == $mrc && $maxEnd > \microtime(true)) {
+        while ($active && CURLM_OK == $mrc && $maxEnd > \time()) {
             if (-1 != \curl_multi_select($mh)) {
                 do {
                     $mrc = \curl_multi_exec($mh, $active);
-                } while (CURLM_CALL_MULTI_PERFORM == $mrc && $maxEnd > \microtime(true));
+                } while (CURLM_CALL_MULTI_PERFORM == $mrc && $maxEnd > \time());
             }
         }
 
